@@ -14,7 +14,9 @@ var request = require("request");
 var enter = process.argv[2];
 var query = process.argv[3];
 
-
+//node liri.js spotify-this-song '<song name here>'
+//node liri.js movie-this '<movie name here>'
+//node liri.js do-what-it-says
 //Twitter
 var TwitterCall = function () {
     log()
@@ -54,127 +56,115 @@ ${time}
 }
 
 //Spotify
-var spotifyCall = function () {
+var spotifyCall = function(){
     log()
-    if (query === undefined) {
-        spotify.search({ type: "track", query: "No Scrubs" }, function (err, data) {
-
-            if (err) {
+      if(query === undefined)  {
+          spotify.search({type: "track", query: "No Scrubs" }, function(err, data) {
+          
+              if (err) {
                 return console.log('Error occurred: ' + err);
-            }
-            var response = data.tracks.items[0]
-            //   var aRottenTomatoesist = album.response.aRottenTomatoesist.name
-            //   var album = album.response.name
-
-
-
-            var aRottenTomatoesist = response.aRottenTomatoesists[0].name;
+              } 
+            var response = data.tracks.items[0]       
+            var artist = response.artists[0].name;
             var album = response.album.name;
             var sample = response.external_urls.spotify;
             var song = response.name;
+        
+  console.log(`
 
-            console.log(`
+              ${artist}
+              
+              ${song}
+              
+              ${album}
+  
+                ${sample}
+ 
+  `)
+  fs.appendFile('log.txt', `
+ 
+              
+              ${artist}
+              
+              ${song}
+              
+              ${album}
+  
+  ${sample}
 
+  `, function(err)  {
+      if(err)  {
+          console.log(err);
+      }
+  })      
+        
+        
             
-            ${aRottenTomatoesist}
-            
-            ${song}
-            
-            ${album}
-
-${sample}
-
-`)
-            fs.appendFile('log.txt', `
-
-            
-            ${aRottenTomatoesist}
-            
-            ${song}
-            
-            ${album}
-
-${sample}
-
-`, function (err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                })
-
-
-
-
-        })
-    } else {
-        spotify.search({ type: "track", query: query }, function (err, data) {
-
-            if (err) {
+        
+            })
+      } else  {
+          spotify.search({type: "track", query: query }, function(err, data) {
+          
+              if (err) {
                 return console.log('Error occurred: ' + err);
-            }
-            var response = data.tracks.items[0]
-            //   var aRottenTomatoesist = album.response.aRottenTomatoesist.name
-            //   var album = album.response.name
-
-
-
-            var aRottenTomatoesist = response.aRottenTomatoesists[0].name;
+              } 
+            var response = data.tracks.items[0]      
+            var artist = response.artists[0].name;
             var album = response.album.name;
             var sample = response.external_urls.spotify;
             var song = response.name;
-
+        
             console.log(`
-
-                      
-                      ${aRottenTomatoesist}
-                      
-                      ${song}
-                      
-                      ${album}
-          
-          ${sample}
-        
-          `)
+                        
+                        ${artist}
+                        
+                        ${song}
+                        
+                        ${album}
+            
+                          ${sample}
+            
+            `)
             fs.appendFile('log.txt', `
-        
-                      
-                      ${aRottenTomatoesist}
-                      
-                      ${song}
-                      
-                      ${album}
           
-          ${sample}
-         
-          `, function (err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                })
-
-
-
-
-        })
-    }
-
-}
+                        
+                        ${artist}
+                        
+                        ${song}
+                        
+                        ${album}
+            
+                        ${sample}
+        
+            `, function(err)  {
+                if(err)  {
+                    console.log(err);
+                }
+            })      
+        
+        
+            
+        
+            })
+      }
+      
+      }
 
 
 var movieCall = function () {
     log()
     if (query === undefined) {
-        request("http://www.omdbapi.com/?apikey=trilogy&plot=shoRottenTomatoes&t=" + "Mr. Nobody", function (error, response, body) {
+        request("http://www.omdbapi.com/?apikey=trilogy&plot=short&t=" + "Mr. Nobody", function (error, response, body) {
 
             var results = JSON.parse(body);
             var title = results.Title;
             var year = results.Year;
-
-            //   var IMDBsource = results.Ratings[0].Source;
+            console.log(results)
+            var IMDBsource = results.Ratings[0].Source;
             var IMDBRating = results.Ratings[0].Value;
             var imdb = (IMDBsource + " " + IMDBRating);
 
-            //  var RotSource = results.Ratings[1].Source;
+            var RotSource = results.Ratings[1].Source;
             var RotRate = results.Ratings[1].Value;
             var RottenTomatoes = (RotSource + " " + RotRate);
 
@@ -222,7 +212,7 @@ var movieCall = function () {
                 })
         })
     } else {
-        request("http://www.omdbapi.com/?apikey=trilogy&plot=shoRottenTomatoes&t=" + query, function (error, response, body) {
+        request("http://www.omdbapi.com/?apikey=trilogy&plot=short&t=" + query, function (error, response, body) {
 
             var results = JSON.parse(body);
             var title = results.Title;
@@ -293,9 +283,12 @@ var doIt = function () {
         if (err) {
             console.log(err)
         }
+       
         var x = data.split(',')
+        
         enter = x[0].trim();
         query = x[1].trim();
+        console.log(enter + "------" + query)
         getCall();
     })
 }
@@ -321,7 +314,7 @@ function log() {
 
 
 var getCall = function () {
-
+console.log(enter + "-------------" + query)
 
     if (enter === "my-tweets") {
         TwitterCall();
